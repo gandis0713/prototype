@@ -60,10 +60,11 @@ std::vector<File::TextLine> File::read_lines()
       while (std::getline(*mStream, s)) {
           std::cout << "s : " << s << std::endl;
 
-          // File::text_type text_data = std::make_unique<char[]>(s.size());
-          File::text_type text_data = std::unique_ptr<char[]>(new (std::nothrow) char[s.size()]);
+          // std::unique_ptr<File::value_type[]> text_data = std::make_unique<File::value_type[]>(s.size());
+          std::unique_ptr<File::value_type[]> text_data = 
+            std::unique_ptr<File::value_type[]>(new (std::nothrow) File::value_type[s.size()]);
 
-          memcpy(text_data.get(), s.c_str(), s.size());
+          memcpy(text_data.get(), s.c_str(), sizeof(File::value_type) * s.size());
 
           if(text_data != nullptr) 
           {

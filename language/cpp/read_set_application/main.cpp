@@ -6,10 +6,11 @@
 
 #include "io/file.h"
 #include "utils/path.h"
+#include "runner.h"
 
 namespace fs = std::filesystem;
 
-void prepare_test()
+void prepare_test_data()
 {
   PathHelper& pathHelper = PathHelper::get_instance();
   std::fstream file {pathHelper.get_file_path(), std::ios::out};
@@ -28,16 +29,9 @@ void prepare_test()
 
 int main(int argc, char *argv[])
 {
-  prepare_test();
+  prepare_test_data();
 
-  File file {PathHelper::get_instance().get_file_path(), File::Type::R};
-  std::vector<File::TextLine> text_lines = std::move(file.read_lines());
-
-  std::cout << text_lines.size() << std::endl;
-  for(const File::TextLine& text_line : text_lines)
-  {
-    std::cout << text_line.data.get() << std::endl;
-  }
+  runner::excute();
   
   return 0;
 }

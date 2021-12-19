@@ -9,7 +9,8 @@
 class File {
 
   using size_type = size_t;
-  using text_type = std::unique_ptr<char[]>;
+  using value_type = char;
+  using text_type = std::unique_ptr<const value_type[]>;
   public:
     enum class Result {
       NoError,

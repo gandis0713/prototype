@@ -12,6 +12,7 @@ project(
 set(SOURCES_FILES
 src/io/file.cpp
 src/utils/path.cpp
+runner.cpp
 main.cpp)
 
 # set compile definitions.
