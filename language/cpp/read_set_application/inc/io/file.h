@@ -7,11 +7,11 @@
 #include <fstream>
 
 class File {
-
-  using size_type = size_t;
-  using value_type = char;
-  using text_type = std::unique_ptr<const value_type[]>;
   public:
+    using size_type = size_t;
+    using value_type = char;
+    using data_type = std::unique_ptr<const value_type[]>;
+
     enum class Result {
       NoError,
       EmptyFilePath,
@@ -25,18 +25,19 @@ class File {
       RW // read/write
     };
 
-    struct TextLine {
+    struct Buffer {
       size_type size;
-      text_type data;
+      data_type data;
 
-      TextLine(size_type size, text_type data);
-      ~TextLine();
+      Buffer();
+      Buffer(size_type size, data_type data);
+      ~Buffer();
 
-      TextLine(const TextLine& text_line) = delete;
-      TextLine& operator = (const TextLine& text_line) = delete;
+      Buffer(const Buffer& text_line) = delete;
+      Buffer& operator = (const Buffer& text_line) = delete;
 
-      TextLine(TextLine&& text_line) noexcept;
-      TextLine& operator = (TextLine&& text_line) noexcept;
+      Buffer(Buffer&& text_line) noexcept;
+      Buffer& operator = (Buffer&& text_line) noexcept;
     };
 
   public:
@@ -47,8 +48,9 @@ class File {
     virtual ~File();
 
     Result open();
-    std::vector<TextLine> read_lines();
     void close();
+
+    static Buffer read_all(const char* path);
   public:
     File& operator=(const File&) = delete;
     File& operator=(File&&) = delete;

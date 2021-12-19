@@ -7,7 +7,8 @@
 class PathHelper{
 public:
   static constexpr char app_name[] = "main.out";
-  static constexpr char file_name[] = "main.txt";
+  static constexpr char file_name[] = "main_file";
+  static constexpr char file_extension[] = "txt";
 
 public:
   PathHelper();
@@ -21,12 +22,11 @@ public:
 
   std::string get_app_dir() const;
   const char* get_app_path() const;
-  std::string get_file_dir() const;
-  const char* get_file_path() const;
+  const char* get_file_dir() const;
 
 private:
   std::filesystem::path app_path_;
-  std::filesystem::path file_path_;
+  std::filesystem::path file_dir_;
 };
 
 #endif // _PROTOTYPE_UTILS_PATH_H_

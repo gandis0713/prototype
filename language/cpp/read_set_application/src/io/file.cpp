@@ -1,29 +1,37 @@
 #include "io/file.h"
 #include <iostream>
 #include <cstring>
+#include <thread>
 
-File::TextLine::TextLine(size_type size, text_type data) : 
+File::Buffer::Buffer() : 
+  size(0), 
+  data(nullptr)
+{
+  std::cout << "Buffer()" << std::endl;
+}
+
+File::Buffer::Buffer(size_type size, data_type data) : 
   size(size), 
   data(std::move(data))
 {
-  std::cout << "TextLine()" << std::endl;
+  std::cout << "Buffer(size_type size, data_type data)" << std::endl;
 }
 
-File::TextLine::~TextLine()
+File::Buffer::~Buffer()
 {
-  std::cout << "~TextLine()" << std::endl;
+  std::cout << "~Buffer()" << std::endl;
 }
 
-File::TextLine::TextLine(TextLine&& text_line) noexcept : 
+File::Buffer::Buffer(Buffer&& text_line) noexcept : 
   size(text_line.size), 
   data(std::move(text_line.data))
 {
-  std::cout << "TextLine(TextLine&&)" << std::endl;
+  std::cout << "Buffer(Buffer&&)" << std::endl;
 }
 
-File::TextLine& File::TextLine::operator = (TextLine&& text_line) noexcept
+File::Buffer& File::Buffer::operator = (Buffer&& text_line) noexcept
 {
-  std::cout << "operator(TextLine&=&&)" << std::endl;
+  std::cout << "operator(Buffer&=&&)" << std::endl;
   if(this != &text_line)
   {
     this->size = text_line.size;
@@ -52,32 +60,48 @@ File::~File() {
   this->close();
 }
 
-std::vector<File::TextLine> File::read_lines()
+File::Buffer File::read_all(const char* path)
 {
-  std::vector<TextLine> text_lines;
-  if (mStream->is_open()) {
-      std::string s;
-      while (std::getline(*mStream, s)) {
-          std::cout << "s : " << s << std::endl;
+  File::Buffer buffer;
+  // if (std::ifstream is{path, std::ios::binary | std::ios::ate}) {
+  //   auto size = is.tellg();
+  //   std::string str(size, '\0');  // construct string to stream size
+  //   is.seekg(0);
+  //   if (is.read(&str[0], size)) 
+  //   {
+  //     buffer.size = str.size();
+  //     std::unique_ptr<value_type[]> data = 
+  //       std::unique_ptr<value_type[]>(new (std::nothrow) value_type[buffer.size]);
+  //     if(data != nullptr)
+  //     {
+  //       buffer.data = std::move(data);
+  //     }
+  //   }
+  // }
+  if(std::ifstream file{path, std::ios::in})
+  {
+    std::string s;
+    std::string text;
+    while(std::getline(file, s))
+    {
+      text += s;
+    }
 
-          // std::unique_ptr<File::value_type[]> text_data = std::make_unique<File::value_type[]>(s.size());
-          std::unique_ptr<File::value_type[]> text_data = 
-            std::unique_ptr<File::value_type[]>(new (std::nothrow) File::value_type[s.size()]);
-
-          memcpy(text_data.get(), s.c_str(), sizeof(File::value_type) * s.size());
-
-          if(text_data != nullptr) 
-          {
-            // TextLine text_line {s.size(), s};
-            // text_lines.push_back(std::move(text_line));
-            text_lines.emplace_back(s.size(), std::move(text_data));
-          }
-
-      }
-      mStream->close();
+    buffer.size = text.size();
+    std::unique_ptr<value_type[]> data = 
+      std::unique_ptr<value_type[]>(new (std::nothrow) value_type[buffer.size]);
+    if(data != nullptr)
+    {
+      memcpy(data.get(), text.c_str(), sizeof(File::value_type) * buffer.size);
+      buffer.data = std::move(data);
+    }
   }
 
-  return text_lines;
+
+  // std::cout << "buffer.size : " << buffer.size << std::endl;
+  // std::cout << "buffer.data : " << buffer.data.get() << std::endl;
+
+  return buffer;
 }
 
 File::Result File::open() {

@@ -13,10 +13,14 @@ set(SOURCES_FILES
 src/io/file.cpp
 src/utils/path.cpp
 runner.cpp
+file_reader.cpp
 main.cpp)
 
 # set compile definitions.
 add_compile_definitions(APP_NAME=${APP_NAME})
+add_compile_definitions(USE_THREAD=true)
+add_compile_definitions(THREAD_COUNT=6)
+add_compile_definitions(FILE_COUNT=2)
 
 add_executable(${APP_NAME} ${SOURCES_FILES})
 
