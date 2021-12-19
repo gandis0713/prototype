@@ -9,7 +9,7 @@
 class File {
   public:
     using size_type = size_t;
-    using value_type = char;
+    using value_type = unsigned char;
     using data_type = std::unique_ptr<const value_type[]>;
 
     enum class Result {
@@ -50,7 +50,7 @@ class File {
     Result open();
     void close();
 
-    static Buffer read_all(const char* path);
+    static Buffer read_byte(const char* path);
   public:
     File& operator=(const File&) = delete;
     File& operator=(File&&) = delete;

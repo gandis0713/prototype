@@ -7,31 +7,31 @@ File::Buffer::Buffer() :
   size(0), 
   data(nullptr)
 {
-  std::cout << "Buffer()" << std::endl;
+  // std::cout << "Buffer()" << std::endl;
 }
 
 File::Buffer::Buffer(size_type size, data_type data) : 
   size(size), 
   data(std::move(data))
 {
-  std::cout << "Buffer(size_type size, data_type data)" << std::endl;
+  // std::cout << "Buffer(size_type size, data_type data)" << std::endl;
 }
 
 File::Buffer::~Buffer()
 {
-  std::cout << "~Buffer()" << std::endl;
+  // std::cout << "~Buffer()" << std::endl;
 }
 
-File::Buffer::Buffer(Buffer&& text_line) noexcept : 
+File::Buffer::Buffer(Buffer&& text_line) noexcept :
   size(text_line.size), 
   data(std::move(text_line.data))
 {
-  std::cout << "Buffer(Buffer&&)" << std::endl;
+  // std::cout << "Buffer(Buffer&&)" << std::endl;
 }
 
 File::Buffer& File::Buffer::operator = (Buffer&& text_line) noexcept
 {
-  std::cout << "operator(Buffer&=&&)" << std::endl;
+  // std::cout << "operator(Buffer&=&&)" << std::endl;
   if(this != &text_line)
   {
     this->size = text_line.size;
@@ -60,7 +60,7 @@ File::~File() {
   this->close();
 }
 
-File::Buffer File::read_all(const char* path)
+File::Buffer File::read_byte(const char* path)
 {
   File::Buffer buffer;
   // if (std::ifstream is{path, std::ios::binary | std::ios::ate}) {
