@@ -2,12 +2,14 @@
 #define _IEL_IO_FILE_H_
 
 #include <string>
-#include <fstream>
 #include <memory>
-
-namespace iel {
+#include <vector>
+#include <fstream>
 
 class File {
+
+  using size_type = size_t;
+  using text_type = std::unique_ptr<char[]>;
   public:
     enum class Result {
       NoError,
@@ -22,6 +24,20 @@ class File {
       RW // read/write
     };
 
+    struct TextLine {
+      size_type size;
+      text_type data;
+
+      TextLine(size_type size, text_type data);
+      ~TextLine();
+
+      TextLine(const TextLine& text_line) = delete;
+      TextLine& operator = (const TextLine& text_line) = delete;
+
+      TextLine(TextLine&& text_line) noexcept;
+      TextLine& operator = (TextLine&& text_line) noexcept;
+    };
+
   public:
     File(const char* path, const Type type);
     File(const std::string& path, const Type type);
@@ -30,7 +46,7 @@ class File {
     virtual ~File();
 
     Result open();
-    void read();
+    std::vector<TextLine> read_lines();
     void close();
   public:
     File& operator=(const File&) = delete;
@@ -41,7 +57,5 @@ class File {
     Type mType;
     std::unique_ptr<std::fstream> mStream;
 };
-
-} // namespace iel
 
 #endif // _IEL_IO_FILE_H_

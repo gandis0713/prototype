@@ -1,7 +1,38 @@
 #include "io/file.h"
 #include <iostream>
+#include <cstring>
 
-namespace iel {
+File::TextLine::TextLine(size_type size, text_type data) : 
+  size(size), 
+  data(std::move(data))
+{
+  std::cout << "TextLine()" << std::endl;
+}
+
+File::TextLine::~TextLine()
+{
+  std::cout << "~TextLine()" << std::endl;
+}
+
+File::TextLine::TextLine(TextLine&& text_line) noexcept : 
+  size(text_line.size), 
+  data(std::move(text_line.data))
+{
+  std::cout << "TextLine(TextLine&&)" << std::endl;
+}
+
+File::TextLine& File::TextLine::operator = (TextLine&& text_line) noexcept
+{
+  std::cout << "operator(TextLine&=&&)" << std::endl;
+  if(this != &text_line)
+  {
+    this->size = text_line.size;
+    
+    if(this->data != nullptr) this->data.reset();
+    this->data = std::move(text_line.data);
+  }
+  return *this;
+}
 
 File::File(const char* path, const Type type): 
   mFilePath(path), 
@@ -21,16 +52,31 @@ File::~File() {
   this->close();
 }
 
-void File::read()
+std::vector<File::TextLine> File::read_lines()
 {
+  std::vector<TextLine> text_lines;
   if (mStream->is_open()) {
       std::string s;
-      while (*mStream) {
-          std::getline(*mStream, s);  
-          std::cout << s << std::endl;
+      while (std::getline(*mStream, s)) {
+          std::cout << "s : " << s << std::endl;
+
+          // File::text_type text_data = std::make_unique<char[]>(s.size());
+          File::text_type text_data = std::unique_ptr<char[]>(new (std::nothrow) char[s.size()]);
+
+          memcpy(text_data.get(), s.c_str(), s.size());
+
+          if(text_data != nullptr) 
+          {
+            // TextLine text_line {s.size(), s};
+            // text_lines.push_back(std::move(text_line));
+            text_lines.emplace_back(s.size(), std::move(text_data));
+          }
+
       }
       mStream->close();
   }
+
+  return text_lines;
 }
 
 File::Result File::open() {
@@ -65,6 +111,3 @@ void File::close() {
     mStream->close();
   }
 }
-
-
-} // namespace iel
