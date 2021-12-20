@@ -12,7 +12,7 @@ project(
 set(SOURCES_FILES
 src/io/file.cpp
 src/utils/path.cpp
-runner.cpp
+controller.cpp
 file_reader.cpp
 main.cpp)
 
@@ -20,8 +20,11 @@ main.cpp)
 add_compile_definitions(APP_NAME=${APP_NAME})
 add_compile_definitions(USE_THREAD=true)
 add_compile_definitions(THREAD_COUNT=6)
-add_compile_definitions(FILE_COUNT=2)
+add_compile_definitions(FILE_COUNT=100)
+
+find_package(Threads REQUIRED)
 
 add_executable(${APP_NAME} ${SOURCES_FILES})
 
+target_link_libraries(${APP_NAME} PRIVATE Threads::Threads)
 target_include_directories(${APP_NAME} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/inc/")

@@ -86,13 +86,14 @@ File::Buffer File::read_byte(const char* path)
     {
       text += s;
     }
-
-    buffer.size = text.size();
+    const size_t size = text.size();
+    buffer.size = size + 1;
     std::unique_ptr<value_type[]> data = 
       std::unique_ptr<value_type[]>(new (std::nothrow) value_type[buffer.size]);
     if(data != nullptr)
     {
-      memcpy(data.get(), text.c_str(), sizeof(File::value_type) * buffer.size);
+      memcpy(data.get(), text.c_str(), sizeof(File::value_type) * size);
+      data[0] = '\n';
       buffer.data = std::move(data);
     }
   }

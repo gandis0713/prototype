@@ -6,7 +6,7 @@
 
 #include "io/file.h"
 #include "utils/path.h"
-#include "runner.h"
+#include "controller.h"
 
 namespace fs = std::filesystem;
 
@@ -49,7 +49,8 @@ int main(int argc, char *argv[])
 {
   prepare_test_data();
 
-  runner::excute();
+  Controller controller;
+  controller.excute();
   
   return 0;
 }
