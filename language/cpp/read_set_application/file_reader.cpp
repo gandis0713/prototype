@@ -15,28 +15,10 @@ namespace file_reader
     constexpr int size = FILE_COUNT;
     const PathHelper& pathHelper = PathHelper::get_instance();
 
-    std::queue<File::Buffer> read_buffers;
     // std::vector<File::Buffer> buffers;
     // buffers.reserve(size);
     for(int i = 0; i < size; i++) 
     {
-
-      // std::string file_temp_dir;
-      // file_temp_dir.append(pathHelper.get_file_dir());
-      // file_temp_dir.append("temp/");
-
-      // std::string file_path;
-      // file_path.append(file_temp_dir);
-      // file_path.append(PathHelper::file_name);
-      // file_path.append(std::to_string(i));
-      // file_path.append(".");
-      // file_path.append(PathHelper::file_extension);
-      // File::Buffer buffer = File::read_byte(file_path.c_str());
-
-      // read_buffers.push(std::move(buffer));
-      // // buffers.push_back(std::move(buffer));
-
-      // std::cout << "file path : " << file_path << std::endl;
 
       std::future<void> result = std::async(std::launch::async, [call_back = func, index = i]
       {

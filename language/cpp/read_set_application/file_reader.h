@@ -7,7 +7,10 @@
 
 namespace file_reader
 {
-  
+  class FileReader
+  {
+    void addHandler(std::function<void(File::Buffer, size_t)> func);
+  };
   void read_all(std::function<void(File::Buffer, size_t)> func);
 
 } // namespace file_reader
