@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <typeinfo>
 
 class Base
 {
@@ -8,48 +9,75 @@ public:
     {
         std::cout << "Base constructor" << std::endl;
     }
-    Base(const char* name) : name(name) 
+
+    virtual ~Base() 
     {
-        std::cout << "Base constructor : " << name << std::endl;
+        std::cout << "Base destructor" << std::endl;
     }
 
     virtual void print()
     {
-        std::cout << "Base : " << this->name << std::endl;
+        std::cout << "Base print" << std::endl;
     }
-protected:
-    std::string name;
+    
+    // int age;
+    // bool is[5];
+    // bool is1;
 };
 
 
 class Derive : public Base
 {
-protected:
-    std::string parent = "Base";
 public:
+    // int date;
+
     Derive() : Base() 
     {
         std::cout << "Derive constructor" << std::endl;
     }
-    Derive(const char* name) : Base(name) 
+
+    ~Derive() 
     {
-        std::cout << "Derive constructor : " << name << std::endl;
-    }  
+        std::cout << "Derive destructor" << std::endl;
+    }
 
     void print() override
     {
-        std::cout << "Derive : " << this->name << ", parent : " << this->parent << std::endl;
+        std::cout << "Derive print" << std::endl;
     }
 };
 
 int main() 
 {
-    Base b1("base 1");
-    Derive d1("derive 1");
-    Derive *pD1 = static_cast<Derive*>(&d1);
-    Derive *pD2 = dynamic_cast<Derive*>(&b1);
+    Derive nDerive1;
+    Base& rBaseFromDerive = nDerive1;
+    // Derive& rDeriveFromBaseFromDerive = rBaseFromDerive;
 
-    pD1->print();
-    pD2->print();
+    Derive* pDerive1 = new Derive;
+    Base* pBaseFromDerive = dynamic_cast<Base*>(pDerive1);
+    pBaseFromDerive->~Base();
+    delete pBaseFromDerive;
+    // pBaseFromDerive->print();
+    // Derive *pD1 = static_cast<Derive*>(&nDerive1);
+    // Derive *pDerive1 = dynamic_cast<Derive*>(&nBase1);
+    // Derive *pDerive2 = dynamic_cast<Derive*>(&rBaseFromBase);
+    // Derive *pDerive3 = dynamic_cast<Derive*>(&rBaseFromDerive);
+
+
+    // std::cout << "same" << std::endl;
+
+    // std::cout << sizeof(Base) << std::endl;
+    // std::cout << sizeof(Derive) << std::endl;
+    // std::cout << sizeof(void*) << std::endl;
+
+    // std::cout << "rBaseFromDerive : " << typeid(rBaseFromDerive).name() << std::endl;
+    // std::cout << "pDerive1 : " << typeid(pDerive1).name() << std::endl;
+    // std::cout << "pDerive1 : " << typeid(pDerive1).name() << std::endl;
+    // std::cout << "pDerive2 : " << typeid(pDerive2).name() << std::endl;
+    // std::cout << "pDerive3 : " << typeid(pDerive3).name() << std::endl;
+    // std::cout << "rBaseFromBase : " << typeid(rBaseFromBase).name() << std::endl;
+    // std::cout << "nBase1 : " << typeid(nBase1).name() << std::endl;
+    // std::cout << "rBaseFromDerive : " << typeid(rBaseFromDerive).name() << std::endl;
+
     return 0;
 }
