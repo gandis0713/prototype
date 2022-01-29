@@ -49,9 +49,10 @@ private:
 
   std::queue<Task> tasks_;
   std::mutex mu_task_;
-  std::condition_variable cv_task_;
   
   std::atomic<Status> status_;
+  std::mutex mu_status_;
+  std::condition_variable cv_status_;
 };
 
 #endif // _THREAD_POOL_H_

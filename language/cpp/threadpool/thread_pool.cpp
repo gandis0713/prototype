@@ -10,7 +10,7 @@ ThreadPool::ThreadPool(const size_t thread_count) :
 
 ThreadPool::~ThreadPool()
 {
-  this->cv_task_.notify_all();
+  this->cv_status_.notify_all();
   this->DestroyThreads();
 }
 
@@ -25,41 +25,43 @@ size_t ThreadPool::GetMaxThreadCount() const
 }
 
 void ThreadPool::Start()
-{
+{  
+  std::lock_guard<std::mutex> locK_task(this->mu_task_);
   this->status_.store(Status::Running, std::memory_order_release);
+  print("Thread Started");
+  // std::cout << "Thread Started" << std::endl;
 }
 
 void ThreadPool::Abort()
 {
+  this->DestroyThreads();
   std::cout << "Abort" << std::endl;
   {
     std::lock_guard<std::mutex> locK_task(this->mu_task_);
     this->status_.store(Status::Aborted, std::memory_order_release);
   }
-  this->cv_task_.notify_all();
-  this->DestroyThreads();
+  this->cv_status_.notify_all();
 }
 
 void ThreadPool::Exec()
 {
+  std::cout << "Executed : " << std::this_thread::get_id() << std::endl;
   while(true)
   {
-    std::unique_lock<std::mutex> lock_task(this->mu_task_);
-    std::atomic_thread_fence(std::memory_order_acquire);
+    std::unique_lock<std::mutex> lock_status(this->mu_status_);
+    // std::atomic_thread_fence(std::memory_order_acquire);
     // this->WaitTask();
-    this->cv_task_.wait(lock_task,
+    this->cv_status_.wait(lock_status,
                         [this]()
                         {                          
-                          std::cout << "wait : " << std::this_thread::get_id() << std::endl;
+                          std::cout << "Wait Thread ID : " << std::this_thread::get_id() << std::endl;
                           Status status = this->status_.load(std::memory_order_acquire);
-                          std::cout << static_cast<int>(status) << std::endl;
-                          return !this->tasks_.empty() ||
-                                  status == Status::Aborted ||
-                                  status == Status::Finished;
+                          std::cout << "Wait Status : " << static_cast<int>(status) << std::endl;
+                          return Status::Ready != status;
                         });
 
     // std::unique_lock<std::mutex> lock_task(this->mu_task_);
-    Status status = this->status_.load(std::memory_order_relaxed);
+    Status status = this->status_.load(std::memory_order_acquire);
     if(status == Status::Aborted || status == Status::Finished)
     {
       std::cout << "Aborted" << std::endl;
@@ -73,10 +75,11 @@ void ThreadPool::Exec()
     }
     else 
     {
+      std::cout << "Finished : " << std::this_thread::get_id() << std::endl;
       break;
     }
   }
-  std::cout << "thread end : " << std::this_thread::get_id() << std::endl;
+  std::cout << "Thread end : " << std::this_thread::get_id() << std::endl;
 }
 
 void ThreadPool::CreateThreads()
@@ -95,6 +98,8 @@ void ThreadPool::DestroyThreads()
   {
     thread.join();
   }
+
+  this->threads_.clear();
 }
 
 void ThreadPool::SetTasks(std::queue<Task>&& tasks)
@@ -104,23 +109,22 @@ void ThreadPool::SetTasks(std::queue<Task>&& tasks)
     this->tasks_ = std::move(tasks);
   }
 
-  std::cout << "SetTasks" << std::endl;
-  this->cv_task_.notify_all();
+  this->Start();
 }
 
 void ThreadPool::WaitTask()
 {
-  std::unique_lock<std::mutex> lock_task(this->mu_task_);
-  this->cv_task_.wait(lock_task,
-                      [this]()
-                      {
-                        std::cout << "wait : " << std::this_thread::get_id() << std::endl;
-                        Status status = this->status_.load(std::memory_order_acquire);
-                        std::cout << static_cast<int>(status) << std::endl;
-                        return !this->tasks_.empty() ||
-                                status == Status::Aborted ||
-                                status == Status::Finished;
-                      });
+  // std::unique_lock<std::mutex> lock_task(this->mu_task_);
+  // this->cv_task_.wait(lock_task,
+  //                     [this]()
+  //                     {
+  //                       std::cout << "wait : " << std::this_thread::get_id() << std::endl;
+  //                       Status status = this->status_.load(std::memory_order_acquire);
+  //                       std::cout << static_cast<int>(status) << std::endl;
+  //                       return !this->tasks_.empty() ||
+  //                               status == Status::Aborted ||
+  //                               status == Status::Finished;
+  //                     });
 }
 
 bool ThreadPool::PopTask(Task& task)
