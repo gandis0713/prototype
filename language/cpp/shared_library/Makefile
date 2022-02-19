@@ -3,5 +3,5 @@ build:
 	g++ -c -fpic foo.cpp
 	# ar crf libfoobar.a foo.o bar.o
 	g++ -shared foo.o bar.o -o libfoobar.so
-	g++ main.cpp libfoobar.so -g -o main.out
+	gcc main.cpp libfoobar.so -g -o main.out
 

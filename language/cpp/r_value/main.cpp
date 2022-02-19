@@ -62,5 +62,8 @@ int main()
   CString str4(static_cast<CString&&>(str3));
   CString str5(str4);
 
+  int value = 10;
+  int&& r_value_ref = static_cast<int&&>(value); 
+
   return 0;
 }

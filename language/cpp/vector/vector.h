@@ -64,7 +64,10 @@ void vector<T>::reserve(const size_type size)
 template <typename T>
 void push_back(const T& data)
 {
+  if(this->_size >= this->_capacity)
+  {
 
+  }
 }
 
 }

@@ -20,7 +20,6 @@ int main()
         std::cout << ((flags >> j) & 0x1);
 
     std::cout << '\n';
-
   }
 
   size_t i = 0;
