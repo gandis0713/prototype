@@ -46,6 +46,9 @@
     "cerrno": "cpp",
     "ios": "cpp",
     "iterator": "cpp",
-    "thread": "cpp"
+    "thread": "cpp",
+    "atomic": "cpp",
+    "condition_variable": "cpp",
+    "mutex": "cpp"
   }
 }
